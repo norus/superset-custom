@@ -1,3 +1,9 @@
+#
+# Any changes made to this file will get automatically reloaded by the app
+# 
+# You do NOT need to restart (i.e. docker-compose down && docker-compose up)
+#
+#
 import logging
 import os
 from cachelib.file import FileSystemCache
