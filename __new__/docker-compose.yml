@@ -1,0 +1,55 @@
+x-superset-build: &superset-build
+  context: ./
+  dockerfile: Dockerfile
+x-superset-volumes: &superset-volumes
+  - ./superset-init.sh:/app/superset-init.sh
+  - ./superset_config.py:/app/pythonpath/superset_config.py
+  - superset_home:/app/superset_home
+
+version: "3.7"
+services:
+  superset:
+    build: *superset-build
+    container_name: superset_app
+    env_file: .env
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:8080:8080"
+    volumes: *superset-volumes
+
+  superset-init:
+    build: *superset-build
+    container_name: superset_init
+    env_file: .env
+    command: ["/app/superset-init.sh"]
+    volumes: *superset-volumes
+
+  superset-worker:
+    build: *superset-build
+    container_name: superset_worker
+    env_file: .env
+    command: ["celery", "worker", "--app=superset.tasks.celery_app:app", "-Ofair", "-l", "INFO"]
+    restart: unless-stopped
+    volumes: *superset-volumes
+
+  superset-beat:
+    build: *superset-build
+    container_name: superset_beat
+    env_file: .env
+    command: ["celery", "beat", "--app=superset.tasks.celery_app:app", "--pidfile=", "-f", "/app/celery_beat.log"]
+    restart: unless-stopped
+    volumes: *superset-volumes
+
+  superset-flower:
+    build: *superset-build
+    container_name: superset_flower
+    env_file: .env
+    command: ["flower", "--app=superset.tasks.celery_app:app"]
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:5555:5555"
+    volumes: *superset-volumes
+
+volumes:
+  superset_home:
+    external: false
