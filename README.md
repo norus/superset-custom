@@ -133,8 +133,22 @@ EMAIL_REPORTS_SUBJECT_PREFIX="[Superset Report] "
 EMAIL_REPORTS_WEBDRIVER='firefox'
 ```
 
-### 2. Flask Port
-By default, Superset will be exposed to `0.0.0.0:8088` so you would access it from your browser at http://docker_host:8088
+### 2. Optional Settings
+If you need to add support for a custom DB such as [Clickhouse](https://superset.apache.org/docs/databases/clickhouse), add the respective library name in `docker/requirements-local.txt`
+
+Example:
+
+```shell
+echo "sqlalchemy-clickhouse" >> docker/requirements-local.txt
+```
+
+Detailed guides:
+
+- https://preset.io/blog/2020-05-18-install-db-drivers
+- https://superset.apache.org/docs/databases/dockeradddrivers
+
+### 3. Flask Port
+By default, Superset will be exposed to `0.0.0.0:8088` so you would access it from your browser at `http://docker_host:8088`
 
 If you wish to change the port, open `docker-compose.yml` and replace `8088` with a desired port. For instance, to change to `8080` on the host but keep it on `8088` inside the container you would only need to modify the `ports` part like this:
 
@@ -150,7 +164,7 @@ If you wish to change the port, open `docker-compose.yml` and replace `8088` wit
     volumes: *superset-volumes
 ```
 
-### 3. Superset Admin User
+### 4. Superset Admin User
 By default, `docker/docker-init.sh` creates a user `admin` with password `admin`.
 
 You would want to change that by editing the file and modifying the following section:
