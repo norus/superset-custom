@@ -6,7 +6,9 @@ USER root
 # Install any extra database drivers and other deps
 COPY ./requirements.txt /app
 RUN pip install -r /app/requirements.txt
-#RUN pip install sqlalchemy-clickhouse
+
+# Makre sure user `superset` can access the files
+RUN chown -R superset. /app
 
 # Install Geckodriver for Email Dashboard reports
 RUN apt-get update -y \
@@ -20,7 +22,8 @@ RUN tar -x geckodriver -zf geckodriver-v0.28.0-linux64.tar.gz -O > /usr/bin/geck
 RUN chmod +x /usr/bin/geckodriver
 
 # Switching back to using the `superset` user
-#USER superset
+USER superset
+
 # Needed for Geckodriver
 RUN Xvfb :10 -ac &
 RUN export DISPLAY=:10
